@@ -34,6 +34,6 @@ env:
   # Mobie API key — fetched from Cloud Secret Manager.
   # Create the secret first:  firebase apphosting:secrets:set mobie-api-key
   - variable: API_KEY
-    secret: mobie-api-key
+    secret: 69FA38C4CE62A306C1B520868939684D07AB6DF4794F24A1D42C5FF34E23764A
     availability:
       - RUNTIME
