@@ -1,0 +1,39 @@
+# Firebase App Hosting configuration for the ingn-api backend.
+# Deployed automatically when you push to the connected branch.
+# Docs: https://firebase.google.com/docs/app-hosting/configure
+
+runConfig:
+  cpu: 1
+  memoryMiB: 512
+  minInstances: 0
+  maxInstances: 5
+  concurrency: 80
+
+env:
+  # Mobie Ordering API host — non-secret
+  - variable: API_HOST
+    value: mobileorderprodapi.transactcampus.com
+    availability:
+      - RUNTIME
+
+  # Comma-separated list of allowed origins. After your Firebase site is live,
+  # tighten this to e.g. "https://ingn.web.app,https://ingn.firebaseapp.com".
+  - variable: ALLOWED_ORIGINS
+    value: "*"
+    availability:
+      - RUNTIME
+
+  # Firebase project ID — used by firebase-admin to verify ID tokens.
+  # App Hosting auto-injects GOOGLE_CLOUD_PROJECT, but setting this explicitly
+  # lets us run the same code locally.
+  - variable: FIREBASE_PROJECT_ID
+    value: REPLACE_WITH_FIREBASE_PROJECT_ID
+    availability:
+      - RUNTIME
+
+  # Mobie API key — fetched from Cloud Secret Manager.
+  # Create the secret first:  firebase apphosting:secrets:set mobie-api-key
+  - variable: API_KEY
+    secret: mobie-api-key
+    availability:
+      - RUNTIME

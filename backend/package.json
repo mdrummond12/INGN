@@ -1,0 +1,21 @@
+{
+  "name": "ingn-api",
+  "version": "1.0.0",
+  "description": "INGN GraphQL API for segment uploads — runs on Firebase App Hosting",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@apollo/server": "^4.11.2",
+    "express": "^4.21.1",
+    "cors": "^2.8.5",
+    "graphql": "^16.9.0",
+    "firebase-admin": "^12.7.0"
+  }
+}
