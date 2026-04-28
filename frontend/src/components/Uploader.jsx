@@ -14,6 +14,8 @@ const ADD_TO_SEGMENT = gql`
 export default function Uploader({ user, onSignOut }) {
   const [listName, setListName] = useState('');
   const [conditionId, setConditionId] = useState(757);
+  const [apiKey, setApiKey] = useState('');
+  const [showApiKey, setShowApiKey] = useState(false);
   const [idType, setIdType] = useState('card');
   const [mode, setMode] = useState('append');
   const [entries, setEntries] = useState([]);
@@ -79,6 +81,7 @@ export default function Uploader({ user, onSignOut }) {
   const startUpload = () => {
     if (!entries.length) return log('warn', 'No entries loaded.');
     if (!listName.trim()) return log('warn', 'Please enter a List Name.');
+    if (!apiKey.trim()) return log('warn', 'Please enter your Mobie API key.');
     if (mode === 'replace') setShowReplaceModal(true);
     else runUpload();
   };
@@ -112,6 +115,7 @@ export default function Uploader({ user, onSignOut }) {
       try {
         const res = await addToSegment({
           variables: { input: { conditionId: parseInt(conditionId, 10), value: val } },
+          context: { mobieApiKey: apiKey.trim() },
         });
         const r = res.data?.addToSegment;
         if (r?.success) {
@@ -168,6 +172,28 @@ export default function Uploader({ user, onSignOut }) {
           </button>
         </div>
       </header>
+
+      <div className="field-group" style={{ marginBottom: 16 }}>
+        <label>Mobie API Key</label>
+        <div style={{ display: 'flex', gap: 8 }}>
+          <input
+            type={showApiKey ? 'text' : 'password'}
+            value={apiKey}
+            onChange={(e) => setApiKey(e.target.value)}
+            placeholder="Paste your Mobie API key — kept only in this browser session"
+            autoComplete="off"
+            style={{ flex: 1 }}
+          />
+          <button
+            type="button"
+            className="btn btn-secondary"
+            onClick={() => setShowApiKey((s) => !s)}
+            style={{ padding: '4px 12px', fontSize: 11 }}
+          >
+            {showApiKey ? 'Hide' : 'Show'}
+          </button>
+        </div>
+      </div>
 
       <div className="grid">
         <div className="field-group">
@@ -266,7 +292,7 @@ export default function Uploader({ user, onSignOut }) {
 
       <div className="actions">
         {!running ? (
-          <button className="btn btn-primary" onClick={startUpload} disabled={!entries.length}>
+          <button className="btn btn-primary" onClick={startUpload} disabled={!entries.length || !apiKey.trim()}>
             ▶ Run Upload
           </button>
         ) : (

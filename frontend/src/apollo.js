@@ -6,17 +6,22 @@ const httpLink = new HttpLink({
   uri: import.meta.env.VITE_GRAPHQL_URL,
 });
 
-// Attach the current Firebase ID token to every GraphQL request.
-const authLink = setContext(async (_op, { headers }) => {
+// Attach the Firebase ID token and (when present) the per-operation Mobie API key.
+// Operations pass the Mobie key via Apollo's `context` option, e.g.:
+//   useMutation(MUT, { context: { mobieApiKey: '...' } })
+const authLink = setContext(async (_op, prevContext) => {
+  const headers = { ...(prevContext.headers || {}) };
+
   const user = auth.currentUser;
-  if (!user) return { headers };
-  const token = await user.getIdToken();
-  return {
-    headers: {
-      ...headers,
-      authorization: `Bearer ${token}`,
-    },
-  };
+  if (user) {
+    headers.authorization = `Bearer ${await user.getIdToken()}`;
+  }
+
+  if (prevContext.mobieApiKey) {
+    headers['x-mobie-api-key'] = prevContext.mobieApiKey;
+  }
+
+  return { headers };
 });
 
 export const apolloClient = new ApolloClient({

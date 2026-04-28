@@ -10,30 +10,21 @@ runConfig:
   concurrency: 80
 
 env:
-  # Mobie Ordering API host — non-secret
   - variable: API_HOST
     value: mobileorderprodapi.transactcampus.com
     availability:
       - RUNTIME
 
-  # Comma-separated list of allowed origins. After your Firebase site is live,
-  # tighten this to e.g. "https://ingn.web.app,https://ingn.firebaseapp.com".
   - variable: ALLOWED_ORIGINS
-    value: "*"
+    value: "https://ingn-2e1e9.web.app,https://ingn-2e1e9.firebaseapp.com"
     availability:
       - RUNTIME
 
-  # Firebase project ID — used by firebase-admin to verify ID tokens.
-  # App Hosting auto-injects GOOGLE_CLOUD_PROJECT, but setting this explicitly
-  # lets us run the same code locally.
   - variable: FIREBASE_PROJECT_ID
-    value: REPLACE_WITH_FIREBASE_PROJECT_ID
+    value: ingn-2e1e9
     availability:
       - RUNTIME
 
-  # Mobie API key — fetched from Cloud Secret Manager.
-  # Create the secret first:  firebase apphosting:secrets:set mobie-api-key
-  - variable: API_KEY
-    secret: 69FA38C4CE62A306C1B520868939684D07AB6DF4794F24A1D42C5FF34E23764A
-    availability:
-      - RUNTIME
+  # Note: the Mobie API key is supplied per-request by the signed-in user
+  # via the `x-mobie-api-key` header — not held server-side. Future iteration
+  # will store each user's key encrypted in Firestore.

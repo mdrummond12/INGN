@@ -24,12 +24,12 @@ export const resolvers = {
   Mutation: {
     addToSegment: async (_p, { input }, ctx) => {
       requireAuth(ctx);
-      return callMobieSegment('adduser', input);
+      return callMobieSegment('adduser', input, ctx.mobieApiKey);
     },
 
     removeFromSegment: async (_p, { input }, ctx) => {
       requireAuth(ctx);
-      return callMobieSegment('removeuser', input);
+      return callMobieSegment('removeuser', input, ctx.mobieApiKey);
     },
   },
 };

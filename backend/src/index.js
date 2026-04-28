@@ -20,6 +20,7 @@ app.use(
   cors({
     origin: ALLOWED_ORIGINS.includes('*') ? true : ALLOWED_ORIGINS,
     credentials: true,
+    allowedHeaders: ['Content-Type', 'Authorization', 'x-mobie-api-key'],
   })
 );
 
@@ -53,12 +54,14 @@ app.use(
           console.warn('Token verification failed:', err.message);
         }
       }
-      return { user };
+      // The user supplies their own Mobie API key per request.
+      const mobieApiKey = req.headers['x-mobie-api-key'] || null;
+      return { user, mobieApiKey };
     },
   })
 );
 
 app.listen(PORT, () => {
   console.log(`INGN API listening on :${PORT}`);
-  console.log(`API_HOST=${process.env.API_HOST} API_KEY=${process.env.API_KEY ? 'set' : 'NOT SET'}`);
+  console.log(`API_HOST=${process.env.API_HOST}`);
 });

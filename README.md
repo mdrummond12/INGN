@@ -7,7 +7,7 @@ Bulk-upload card numbers or emails to a Mobie Ordering segment, secured by Googl
 | Frontend | React + Vite + Apollo Client + Firebase Auth | Firebase Hosting |
 | Backend  | Apollo Server + Express + Firebase Admin     | Firebase App Hosting (`ingn-api`) |
 | Auth     | Firebase Auth — Google sign-in                | Firebase |
-| Secrets  | Mobie API key                                 | Cloud Secret Manager (linked to App Hosting) |
+| Mobie API key | Supplied by the user per session, sent on the `x-mobie-api-key` header. Future: stored encrypted in Firestore per user. | — |
 
 ```
 INGN/
@@ -52,12 +52,12 @@ Browser                Firebase Hosting          Firebase App Hosting        Mob
 ─────────              ─────────────────         ─────────────────────       ─────────
 React UI    ───────►   serves dist/         
 Apollo Client ──────────────────────────►   Apollo Server (ingn-api)
-   (Bearer ID token)                          ├─ verify Firebase ID token
-                                              ├─ inject api_key from secret
+   (Bearer ID token +                          ├─ verify Firebase ID token
+    x-mobie-api-key)                           ├─ forward api_key to Mobie
                                               └─────────────────────────────► /api_campus/segment/adduser
 ```
 
-The browser only ever sees the GraphQL endpoint. The Mobie API key is held server-side in Secret Manager and injected on each call. Unauthenticated GraphQL requests are rejected by `requireAuth()` in the resolvers.
+The browser sends the Firebase ID token (auth) plus the user's Mobie API key on each GraphQL request. The backend verifies the ID token, then forwards the Mobie key to the upstream API. Unauthenticated GraphQL requests are rejected by `requireAuth()` in the resolvers.
 
 ---
 
@@ -77,18 +77,9 @@ Then enable:
 - `frontend/.firebaserc` — set `default` to your Firebase project ID
 - `backend/apphosting.yaml` — set `FIREBASE_PROJECT_ID` to your project ID
 
-### 3. Create the Mobie API key secret
+### 3. Mobie API key
 
-App Hosting reads secrets through Cloud Secret Manager. Create one with the Firebase CLI:
-
-```bash
-cd backend
-firebase apphosting:secrets:set mobie-api-key
-# It prompts for the secret value — paste:
-# 69FA38C4CE62A306C1B520868939684D07AB6DF4794F24A1D42C5FF34E23764A
-```
-
-This stores the secret and grants the App Hosting backend permission to read it. The reference in `apphosting.yaml` (`secret: mobie-api-key`) wires it up.
+The user supplies their own key in the UI; the frontend forwards it as the `x-mobie-api-key` header on each GraphQL request. Nothing to configure server-side. (A future iteration will let signed-in users save the key encrypted to their Firestore record so they don't have to paste it every session.)
 
 ### 4. Push to GitHub (`INGN` repo)
 
@@ -170,12 +161,13 @@ Push to main — App Hosting will redeploy with the new value.
 ```bash
 cd backend
 npm install
-export API_KEY=your-mobie-api-key
 export FIREBASE_PROJECT_ID=your-project-id
 export GOOGLE_APPLICATION_CREDENTIALS=/path/to/service-account.json
 npm run dev
 # → http://localhost:8080/graphql
 ```
+
+The Mobie API key is supplied per-request by the frontend, so no `API_KEY` env var is needed locally either.
 
 ### Frontend
 

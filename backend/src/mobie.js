@@ -1,18 +1,18 @@
 const API_HOST = process.env.API_HOST || 'mobileorderprodapi.transactcampus.com';
-const API_KEY = process.env.API_KEY || '';
 
 const ALLOWED_ENDPOINTS = new Set(['adduser', 'removeuser']);
 
 /**
- * Call the Mobie Ordering segment endpoint with the server-side API key.
- * Returns a SegmentResult-shaped object (matches the GraphQL type).
+ * Call the Mobie Ordering segment endpoint. The caller must supply their own
+ * Mobie API key (currently via the `x-mobie-api-key` request header; later
+ * fetched from the user's encrypted record in Firestore).
  */
-export async function callMobieSegment(endpoint, { conditionId, value }) {
+export async function callMobieSegment(endpoint, { conditionId, value }, apiKey) {
   if (!ALLOWED_ENDPOINTS.has(endpoint)) {
     return { success: false, status: 400, message: `Endpoint not allowed: ${endpoint}`, raw: null };
   }
-  if (!API_KEY) {
-    return { success: false, status: 500, message: 'API_KEY not configured on server', raw: null };
+  if (!apiKey) {
+    return { success: false, status: 401, message: 'Missing Mobie API key', raw: null };
   }
 
   const body = JSON.stringify({
@@ -28,7 +28,7 @@ export async function callMobieSegment(endpoint, { conditionId, value }) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        api_key: API_KEY,
+        api_key: apiKey,
       },
       body,
     });
