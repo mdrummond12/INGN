@@ -15,6 +15,7 @@ on:
         options:
           - all
           - hosting
+          - firestore
 
 jobs:
   deploy:

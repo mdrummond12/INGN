@@ -212,5 +212,43 @@ input:focus { border-color: var(--accent3); }
 .modal { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 28px; max-width: 440px; width: 90%; }
 .modal h2 { font-family: 'IBM Plex Mono', monospace; font-size: 15px; margin-bottom: 10px; color: var(--warn); }
 .modal p { color: var(--text-muted); font-size: 13px; line-height: 1.6; margin-bottom: 20px; }
-.modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
+.modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
 code { font-family: 'IBM Plex Mono', monospace; color: var(--accent3); }
+
+/* Profiles bar (above the form) */
+.profile-bar {
+  display: flex;
+  gap: 12px;
+  align-items: flex-end;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
+.profile-actions { display: flex; gap: 8px; }
+
+select {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 13px;
+  padding: 8px 12px;
+  width: 100%;
+  outline: none;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path fill='%237d8590' d='M5 6L0 0h10z'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 32px;
+}
+select:focus { border-color: var(--accent3); }
+select:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* Read-only / masked input style (saved API key) */
+input[readonly] {
+  color: var(--text-muted);
+  background: var(--surface2);
+  cursor: default;
+}
