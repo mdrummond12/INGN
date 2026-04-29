@@ -46,18 +46,12 @@ jobs:
           VITE_GRAPHQL_URL:          ${{ secrets.VITE_GRAPHQL_URL }}
         run: npm run build
 
-      - name: Authenticate to GCP
-        uses: google-github-actions/auth@v2
-        with:
-          credentials_json: ${{ secrets.GCP_SA_KEY }}
-
-      - name: Setup Cloud SDK
-        uses: google-github-actions/setup-gcloud@v2
-
       - name: Install Firebase CLI
         run: npm install -g firebase-tools
 
       - name: Deploy
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
         run: |
           if [ "${{ github.event.inputs.target }}" = "all" ]; then
             firebase deploy --project ingn-2e1e9 --non-interactive
